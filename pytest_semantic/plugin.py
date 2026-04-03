@@ -97,7 +97,9 @@ def semantic_evaluator(request: pytest.FixtureRequest) -> SemanticEvaluator:
 
 
 @pytest.fixture(scope="session")
-def semantic(request: pytest.FixtureRequest, semantic_evaluator: SemanticEvaluator) -> SemanticAssert:
+def semantic(
+    request: pytest.FixtureRequest, semantic_evaluator: SemanticEvaluator
+) -> SemanticAssert:
     threshold = float(request.config.getoption("--semantic-threshold"))
     return SemanticAssert(semantic_evaluator, default_threshold=threshold)
 

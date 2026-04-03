@@ -150,7 +150,10 @@ class TestSemanticIntegration:
 
         semantic.assert_similar(
             candidate=summary,
-            reference="Python is a popular and versatile programming language used for web development, data science, and automation.",
+            reference=(
+                "Python is a popular and versatile programming language used for "
+                "web development, data science, and automation."
+            ),
             threshold=0.5,
         )
 

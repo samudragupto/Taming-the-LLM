@@ -7,7 +7,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from src.evaluation.properties import PropertyChecker, PropertyReport
+from src.evaluation.properties import PropertyChecker
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
@@ -99,28 +99,34 @@ class TestPropertyCheckerBasic:
 class TestPropertyReport:
     def test_all_passed(self) -> None:
         checker = PropertyChecker()
-        report = checker.run_checks([
-            PropertyChecker.check_not_empty("hello"),
-            PropertyChecker.check_max_length("hello", 100),
-        ])
+        report = checker.run_checks(
+            [
+                PropertyChecker.check_not_empty("hello"),
+                PropertyChecker.check_max_length("hello", 100),
+            ]
+        )
         assert report.all_passed is True
         assert len(report.failures) == 0
 
     def test_mixed_results(self) -> None:
         checker = PropertyChecker()
-        report = checker.run_checks([
-            PropertyChecker.check_not_empty("hello"),
-            PropertyChecker.check_max_length("a" * 200, 100),
-        ])
+        report = checker.run_checks(
+            [
+                PropertyChecker.check_not_empty("hello"),
+                PropertyChecker.check_max_length("a" * 200, 100),
+            ]
+        )
         assert report.all_passed is False
         assert len(report.failures) == 1
 
     def test_summary_output(self) -> None:
         checker = PropertyChecker()
-        report = checker.run_checks([
-            PropertyChecker.check_not_empty(""),
-            PropertyChecker.check_max_length("ok", 100),
-        ])
+        report = checker.run_checks(
+            [
+                PropertyChecker.check_not_empty(""),
+                PropertyChecker.check_max_length("ok", 100),
+            ]
+        )
         summary = report.summary()
         assert "1/2 passed" in summary
         assert "FAIL" in summary
@@ -135,9 +141,7 @@ class TestPropertyFromFixtures:
             output = case["output"]
             for check_name in case["checks"]:
                 if check_name == "value_in_set":
-                    result = PropertyChecker.check_value_in_set(
-                        output, set(case["allowed_values"])
-                    )
+                    result = PropertyChecker.check_value_in_set(output, set(case["allowed_values"]))
                     assert result.passed, f"Case '{case['name']}' failed {check_name}"
                 elif check_name == "valid_json":
                     result = PropertyChecker.check_valid_json(output)
@@ -180,7 +184,13 @@ class TestPropertyHypothesis:
         result = PropertyChecker.check_value_in_set(value, allowed)
         assert result.passed == (value.strip().lower() in allowed)
 
-    @given(text=st.text(min_size=1, max_size=500, alphabet=st.characters(categories=("L", "N", "P", "Z"))))
+    @given(
+        text=st.text(
+            min_size=1,
+            max_size=500,
+            alphabet=st.characters(categories=("L", "N", "P", "Z")),
+        )
+    )
     @settings(max_examples=50)
     def test_no_pii_no_false_positive_on_plain_text(self, text: str) -> None:
         if "@" not in text and not any(c.isdigit() for c in text):

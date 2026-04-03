@@ -70,9 +70,7 @@ class GuardrailChecker:
         return GuardrailResult(
             name="output_length",
             passed=passed,
-            message=(
-                f"Estimated {estimated_tokens} tokens (limit: {max_tokens_estimate})"
-            ),
+            message=(f"Estimated {estimated_tokens} tokens (limit: {max_tokens_estimate})"),
             severity="warning" if not passed else "info",
         )
 

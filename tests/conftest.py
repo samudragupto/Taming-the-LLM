@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 from unittest.mock import MagicMock
 
 import httpx
@@ -11,7 +12,6 @@ import respx
 
 from src.agent import Agent
 from src.client import LLMClient
-
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
@@ -65,9 +65,7 @@ def llm_client_with_respx() -> LLMClient:
 
 
 @pytest.fixture
-def configure_mock_completion(
-    mock_llm_client: LLMClient, mock_responses: dict[str, Any]
-) -> Any:
+def configure_mock_completion(mock_llm_client: LLMClient, mock_responses: dict[str, Any]) -> Any:
     def _configure(task: str, response_key: str) -> None:
         response_data = mock_responses[task][response_key]
         mock_response = MagicMock()

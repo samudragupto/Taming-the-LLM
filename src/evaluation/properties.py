@@ -44,7 +44,9 @@ class PropertyChecker:
         return PropertyResult(
             name="max_length",
             passed=passed,
-            message=f"Length {length} <= {max_chars}" if passed else f"Length {length} > {max_chars}",
+            message=f"Length {length} <= {max_chars}"
+            if passed
+            else f"Length {length} > {max_chars}",
         )
 
     @staticmethod
