@@ -2,6 +2,10 @@
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "pytest_semantic*"]
+
 [project]
 name = "taming-the-llm"
 version = "1.0.0"
