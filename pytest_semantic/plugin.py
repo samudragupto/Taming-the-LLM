@@ -104,7 +104,7 @@ def semantic(
     return SemanticAssert(semantic_evaluator, default_threshold=threshold)
 
 
-def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) -> None:  # type: ignore[type-arg]
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) -> None:
     if call.excinfo is not None and isinstance(call.excinfo.value, SemanticAssertionError):
         err = call.excinfo.value
         if hasattr(item, "user_properties"):
