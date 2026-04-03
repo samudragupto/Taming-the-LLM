@@ -13,60 +13,60 @@ The testing pipeline is constructed across four distinct evaluation layers:
 ```mermaid
 graph TB
     subgraph "Test Input"
-        T1[pytest test function]
-        T2[Mock LLM Response (JSON fixture)]
+        T1["pytest test function"]
+        T2["Mock LLM Response (JSON fixture)"]
     end
     
     subgraph "Layer 1: HTTP Boundary Mocking"
-        L1[respx interceptor]
+        L1["respx interceptor"]
     end
     
     subgraph "Layer 2: Property Validation"
-        L2A[JSON schema check]
-        L2B[Length constraints]
-        L2C[Value set membership]
-        L2D[PII detection]
+        L2A["JSON schema check"]
+        L2B["Length constraints"]
+        L2C["Value set membership"]
+        L2D["PII detection"]
     end
     
     subgraph "Layer 3: Semantic Evaluation"
-        L3A[Sentence Transformer<br/>all-MiniLM-L6-v2]
-        L3B[Cosine similarity calculation]
-        L3C[Threshold assertion]
+        L3A["Sentence Transformer<br/>all-MiniLM-L6-v2"]
+        L3B["Cosine similarity calculation"]
+        L3C["Threshold assertion"]
     end
     
     subgraph "Layer 4: Guardrails"
-        L4A[Prompt injection detection]
-        L4B[Harmful content patterns]
-        L4C[Language consistency]
+        L4A["Prompt injection detection"]
+        L4B["Harmful content patterns"]
+        L4C["Language consistency"]
     end
     
     subgraph "Test Output"
-        R1[Pass/Fail result]
-        R2[Similarity score report]
-        R3[Security violation alert]
+        R1["Pass/Fail result"]
+        R2["Similarity score report"]
+        R3["Security violation alert"]
     end
     
-    T1 --> L1;
-    L1 --> T2;
-    T2 --> L2A;
-    T2 --> L2B;
-    T2 --> L2C;
-    T2 --> L2D;
-    L2A --> L3A;
-    L2B --> L3A;
-    L2C --> L3A;
-    L2D --> L3A;
-    L3A --> L3B;
-    L3B --> L3C;
-    L3C --> L4A;
-    L3C --> L4B;
-    L3C --> L4C;
-    L4A --> R1;
-    L4B --> R1;
-    L4C --> R1;
-    L3C --> R2;
-    L4A --> R3;
-    L4B --> R3;
+    T1 --> L1
+    L1 --> T2
+    T2 --> L2A
+    T2 --> L2B
+    T2 --> L2C
+    T2 --> L2D
+    L2A --> L3A
+    L2B --> L3A
+    L2C --> L3A
+    L2D --> L3A
+    L3A --> L3B
+    L3B --> L3C
+    L3C --> L4A
+    L3C --> L4B
+    L3C --> L4C
+    L4A --> R1
+    L4B --> R1
+    L4C --> R1
+    L3C --> R2
+    L4A --> R3
+    L4B --> R3
 ```
 1. HTTP Boundary Mocking
 Unit tests should evaluate the application logic, not the latency or variance of external APIs. This framework utilizes respx to intercept network requests at the HTTP layer, injecting deterministic JSON fixtures. This isolates the agent logic and ensures test suites remain fast and cost-free.
