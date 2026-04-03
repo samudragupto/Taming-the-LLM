@@ -88,7 +88,7 @@ class SemanticAssert:
 
     def similarity(self, text_a: str, text_b: str) -> float:
         return self._evaluator.similarity(text_a, text_b)
-#
+
 
 @pytest.fixture(scope="session")
 def semantic_evaluator(request: pytest.FixtureRequest) -> SemanticEvaluator:
