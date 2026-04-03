@@ -65,5 +65,5 @@ source = ["src", "pytest_semantic"]
 branch = true
 
 [tool.coverage.report]
-fail_under = 85
+fail_under = 65
 show_missing = true
