@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\src\prompts.py
+# hypothesis_version: 6.151.10
+
+['answer_question', 'classify_sentiment', 'extract_entities', 'summarize']

@@ -1,0 +1,52 @@
+{
+    "semantic_similarity_cases": [
+        {
+            "name": "paraphrased_summary",
+            "candidate": "Python is a flexible language popular in web dev, data analysis, and scripting.",
+            "reference": "Python is a versatile programming language used in web development, data science, and automation.",
+            "expected_similar": true,
+            "min_threshold": 0.7
+        },
+        {
+            "name": "unrelated_texts",
+            "candidate": "The weather forecast calls for rain tomorrow afternoon.",
+            "reference": "Python is a versatile programming language used in web development.",
+            "expected_similar": false,
+            "min_threshold": 0.7
+        },
+        {
+            "name": "same_meaning_different_words",
+            "candidate": "The function returned an error because the input was invalid.",
+            "reference": "An exception was raised due to bad input data being passed to the method.",
+            "expected_similar": true,
+            "min_threshold": 0.35
+        },
+        {
+            "name": "contradictory_statements",
+            "candidate": "The test suite passed with zero failures.",
+            "reference": "All tests failed and the build is broken.",
+            "expected_similar": false,
+            "min_threshold": 0.7
+        }
+    ],
+    "property_test_cases": [
+        {
+            "name": "valid_sentiment",
+            "output": "positive",
+            "checks": ["value_in_set"],
+            "allowed_values": ["positive", "negative", "neutral"]
+        },
+        {
+            "name": "valid_entity_json",
+            "output": "[{\"entity\": \"Guido\", \"type\": \"PERSON\"}]",
+            "checks": ["valid_json", "json_schema"],
+            "required_keys": ["entity", "type"]
+        },
+        {
+            "name": "summary_length",
+            "output": "Python is great. It is versatile. Many people use it.",
+            "checks": ["max_sentences", "not_empty"],
+            "max_sentences": 3
+        }
+    ]
+}

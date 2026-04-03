@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\pytest_semantic\plugin.py
+# hypothesis_version: 6.151.10
+
+['--semantic-model', '--semantic-threshold', '0.75', 'all-MiniLM-L6-v2', 'markers', 'semantic_similarity', 'semantic_threshold', 'session', 'store', 'user_properties']

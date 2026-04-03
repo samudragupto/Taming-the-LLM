@@ -1,0 +1,123 @@
+{
+    "summarize": {
+        "good_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "Python is a versatile programming language used in web development, data science, and automation. It is known for its readable syntax and large ecosystem of libraries."
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 150,
+                "completion_tokens": 35
+            }
+        },
+        "input_text": "Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation. Python is dynamically typed and garbage-collected. It supports multiple programming paradigms, including structured, object-oriented and functional programming. It is often described as a batteries included language due to its comprehensive standard library. Python consistently ranks as one of the most popular programming languages. It is used in web development, data science, artificial intelligence, scientific computing, and automation."
+    },
+    "classify_sentiment": {
+        "positive_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "positive"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 50,
+                "completion_tokens": 1
+            }
+        },
+        "negative_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "negative"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 50,
+                "completion_tokens": 1
+            }
+        },
+        "invalid_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "somewhat happy"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 50,
+                "completion_tokens": 2
+            }
+        }
+    },
+    "extract_entities": {
+        "good_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "[{\"entity\": \"Guido van Rossum\", \"type\": \"PERSON\"}, {\"entity\": \"Netherlands\", \"type\": \"LOCATION\"}, {\"entity\": \"Google\", \"type\": \"ORGANIZATION\"}]"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 80,
+                "completion_tokens": 45
+            }
+        },
+        "malformed_json_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "Here are the entities: Guido van Rossum (person), Netherlands (location)"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 80,
+                "completion_tokens": 20
+            }
+        }
+    },
+    "answer_question": {
+        "good_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "Python was created by Guido van Rossum and was first released in 1991."
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 200,
+                "completion_tokens": 15
+            }
+        },
+        "unknown_response": {
+            "choices": [
+                {
+                    "message": {
+                        "content": "I don't know"
+                    }
+                }
+            ],
+            "model": "gpt-4o-mini",
+            "usage": {
+                "prompt_tokens": 200,
+                "completion_tokens": 4
+            }
+        }
+    }
+}
