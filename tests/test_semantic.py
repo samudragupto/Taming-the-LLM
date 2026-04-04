@@ -183,54 +183,6 @@ class TestSemanticEvaluatorEdgeCases:
         assert result.passed is False
 
 
-[
-    {
-        "resource": "/c:/Users/user/Desktop/taming-the-llm/src/evaluation/semantic.py",
-        "owner": "Pylance10",
-        "code": {
-            "value": "reportUndefinedVariable",
-            "target": {
-                "$mid": 1,
-                "path": "/microsoft/pylance-release/blob/main/docs/diagnostics/reportUndefinedVariable.md",
-                "scheme": "https",
-                "authority": "github.com",
-            },
-        },
-        "severity": 4,
-        "message": '"pytest" is not defined',
-        "source": "Pylance",
-        "startLineNumber": 95,
-        "startColumn": 2,
-        "endLineNumber": 95,
-        "endColumn": 8,
-        "modelVersionId": 15,
-        "origin": "extHost1",
-    },
-    {
-        "resource": "/c:/Users/user/Desktop/taming-the-llm/src/evaluation/semantic.py",
-        "owner": "Pylance10",
-        "code": {
-            "value": "reportUndefinedVariable",
-            "target": {
-                "$mid": 1,
-                "path": "/microsoft/pylance-release/blob/main/docs/diagnostics/reportUndefinedVariable.md",
-                "scheme": "https",
-                "authority": "github.com",
-            },
-        },
-        "severity": 4,
-        "message": '"pytest" is not defined',
-        "source": "Pylance",
-        "startLineNumber": 96,
-        "startColumn": 2,
-        "endLineNumber": 96,
-        "endColumn": 8,
-        "modelVersionId": 15,
-        "origin": "extHost1",
-    },
-]
-
-
 @pytest.mark.semantic
 @pytest.mark.slow
 class TestSemanticEvaluatorInternals:
