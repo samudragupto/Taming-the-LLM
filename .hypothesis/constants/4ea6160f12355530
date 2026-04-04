@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\src\client.py
+# hypothesis_version: 6.151.10
+
+[0.0, 30.0, 1000, 1024, '/chat/completions', 'Authorization', 'Content-Type', 'application/json', 'choices', 'completion_tokens', 'content', 'gpt-4o-mini', 'llm_request_failed', 'max_tokens', 'message', 'messages', 'model', 'prompt_tokens', 'role', 'system', 'temperature', 'usage', 'user']

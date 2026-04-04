@@ -187,3 +187,22 @@ class TestSemanticIntegration:
             reference="Java was created by James Gosling at Sun Microsystems.",
             threshold=0.85,
         )
+
+
+@pytest.mark.integration
+class TestLLMClientEdgeCases:
+    def test_client_close_method(self, llm_client_with_respx: LLMClient) -> None:
+        llm_client_with_respx.close()
+        # Ensure no exception raised
+
+    def test_client_with_custom_temperature(
+        self,
+        respx_mock_openai: respx.MockRouter,
+        mock_responses: dict[str, Any],
+    ) -> None:
+        respx_mock_openai.post("/chat/completions").mock(
+            return_value=httpx.Response(200, json=mock_responses["summarize"]["good_response"])
+        )
+        client = LLMClient(api_key="fake", base_url="https://api.openai.com/v1", temperature=0.7)
+        response = client.complete(system="Test", user="Test", temperature=0.9)
+        assert response.content is not None

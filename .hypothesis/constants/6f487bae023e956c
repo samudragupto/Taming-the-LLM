@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\src\evaluation\guardrails.py
+# hypothesis_version: 6.151.10
+
+[0.3, 127, 2000, '.,;:!?\'-"', 'critical', 'harmful_content', 'info', 'language_consistency', 'latin', 'output_length', 'prompt_injection', 'warning']

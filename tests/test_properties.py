@@ -196,3 +196,97 @@ class TestPropertyHypothesis:
         if "@" not in text and not any(c.isdigit() for c in text):
             result = PropertyChecker.check_no_pii(text)
             assert result.passed is True
+
+
+class TestPropertyCheckerEdgeCases:
+    def test_max_length_exact_boundary(self) -> None:
+        result = PropertyChecker.check_max_length("a" * 100, max_chars=100)
+        assert result.passed is True
+
+    def test_max_sentences_with_exclamation_marks(self) -> None:
+        result = PropertyChecker.check_max_sentences("One! Two! Three!", max_sentences=3)
+        assert result.passed is True
+
+    def test_max_sentences_with_question_marks(self) -> None:
+        result = PropertyChecker.check_max_sentences(
+            "First? Second? Third? Fourth?", max_sentences=3
+        )
+        assert result.passed is False
+
+    def test_max_sentences_empty_text(self) -> None:
+        result = PropertyChecker.check_max_sentences("", max_sentences=3)
+        assert result.passed is True
+
+    def test_no_pii_multiple_patterns(self) -> None:
+        result = PropertyChecker.check_no_pii(
+            "Contact john@example.com or call 555-123-4567. SSN: 123-45-6789"
+        )
+        assert result.passed is False
+        assert "email" in result.message
+        assert "phone" in result.message or "SSN" in result.message
+
+    def test_valid_json_empty_object(self) -> None:
+        result = PropertyChecker.check_valid_json("{}")
+        assert result.passed is True
+
+    def test_valid_json_empty_array(self) -> None:
+        result = PropertyChecker.check_valid_json("[]")
+        assert result.passed is True
+
+    def test_json_schema_dict_with_all_keys(self) -> None:
+        result = PropertyChecker.check_json_schema(
+            '{"entity": "test", "type": "PERSON", "extra": "ignored"}',
+            required_keys=["entity", "type"],
+        )
+        assert result.passed is True
+
+    def test_json_schema_invalid_json(self) -> None:
+        result = PropertyChecker.check_json_schema("not json", required_keys=["key"])
+        assert result.passed is False
+        assert "invalid JSON" in result.message
+
+    def test_json_schema_non_dict_non_list(self) -> None:
+        result = PropertyChecker.check_json_schema('"just a string"', required_keys=["key"])
+        assert result.passed is False
+
+    def test_json_schema_array_with_non_object(self) -> None:
+        result = PropertyChecker.check_json_schema("[1, 2, 3]", required_keys=["key"])
+        assert result.passed is False
+
+    def test_value_in_set_case_normalization(self) -> None:
+        result = PropertyChecker.check_value_in_set("  POSITIVE  ", {"positive", "negative"})
+        assert result.passed is True
+
+    def test_not_empty_with_whitespace_only(self) -> None:
+        result = PropertyChecker.check_not_empty("\t\n  \r")
+        assert result.passed is False
+
+    def test_no_refusal_multiple_patterns(self) -> None:
+        result = PropertyChecker.check_no_refusal(
+            "I cannot help with that. As an AI, I'm unable to assist."
+        )
+        assert result.passed is False
+        assert len(result.message.split(",")) >= 2
+
+    def test_no_refusal_edge_case_mixed_case(self) -> None:
+        result = PropertyChecker.check_no_refusal("I CaNnOt assist with this request.")
+        assert result.passed is False
+
+    def test_run_checks_all_pass(self) -> None:
+        checker = PropertyChecker()
+        results = [
+            PropertyChecker.check_not_empty("text"),
+            PropertyChecker.check_max_length("short", 100),
+            PropertyChecker.check_no_pii("clean text"),
+        ]
+        report = checker.run_checks(results)
+        assert report.all_passed is True
+        assert len(report.failures) == 0
+
+    def test_run_checks_summary_contains_failure_details(self) -> None:
+        checker = PropertyChecker()
+        results = [PropertyChecker.check_not_empty("")]
+        report = checker.run_checks(results)
+        summary = report.summary()
+        assert "0/1 passed" in summary
+        assert "FAIL" in summary

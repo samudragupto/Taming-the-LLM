@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\src\agent.py
+# hypothesis_version: 6.151.10
+
+[0.0, 'DATE', 'LOCATION', 'ORGANIZATION', 'OTHER', 'PERSON', '```', 'agent_task_completed', 'answer_question', 'classify_sentiment', 'entity', 'extract_entities', 'negative', 'neutral', 'positive', 'summarize', 'type']

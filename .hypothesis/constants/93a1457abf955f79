@@ -1,0 +1,4 @@
+# file: C:\Users\user\Desktop\taming-the-llm\src\evaluation\properties.py
+# hypothesis_version: 6.151.10
+
+['No PII detected', 'No refusal detected', 'Output is empty', 'Output is non-empty', 'SSN-like pattern', 'Schema valid', 'Valid JSON', '[.!?]+', 'as a language model', 'as an ai', 'email address', 'i am unable', 'i apologize', "i can't", 'i cannot', "i'm unable", 'json_schema', 'max_length', 'max_sentences', 'no_pii', 'no_refusal', 'not_empty', 'phone number', 'sorry, but i', 'valid_json', 'value_in_set']

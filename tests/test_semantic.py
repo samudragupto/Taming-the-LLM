@@ -133,3 +133,51 @@ class TestSemanticPlugin:
             reference="Database normalization reduces redundancy.",
             threshold=0.8,
         )
+
+
+@pytest.mark.semantic
+@pytest.mark.slow
+class TestSemanticEvaluatorEdgeCases:
+    def test_embed_single_word(self, evaluator: SemanticEvaluator) -> None:
+        embedding = evaluator.embed("word")
+        assert embedding.shape[0] > 0
+
+    def test_embed_empty_string(self, evaluator: SemanticEvaluator) -> None:
+        embedding = evaluator.embed("")
+        assert embedding.shape[0] > 0
+
+    def test_embed_batch_single_item(self, evaluator: SemanticEvaluator) -> None:
+        embeddings = evaluator.embed_batch(["single"])
+        assert embeddings.shape[0] == 1
+
+    def test_similarity_boundary_values(self, evaluator: SemanticEvaluator) -> None:
+        score = evaluator.similarity("test", "test")
+        assert 0.0 <= score <= 1.0
+
+    def test_evaluate_exact_threshold(self, evaluator: SemanticEvaluator) -> None:
+        result = evaluator.evaluate("The cat sat.", "A cat was sitting.", threshold=0.6)
+        assert isinstance(result.similarity, float)
+        assert result.threshold == 0.6
+
+    def test_evaluate_best_match_first_reference_best(self, evaluator: SemanticEvaluator) -> None:
+        references = [
+            "Python is a programming language.",
+            "The weather is sunny.",
+            "Cooking is an art.",
+        ]
+        result = evaluator.evaluate_best_match(
+            "Python is used for coding.", references, threshold=0.5
+        )
+        assert "Python" in result.reference
+
+    def test_get_instance_caching(self) -> None:
+        instance1 = SemanticEvaluator.get_instance("all-MiniLM-L6-v2")
+        instance2 = SemanticEvaluator.get_instance("all-MiniLM-L6-v2")
+        assert instance1 is instance2
+
+    def test_evaluate_best_match_no_match_below_threshold(
+        self, evaluator: SemanticEvaluator
+    ) -> None:
+        references = ["Quantum physics", "Stock market trends"]
+        result = evaluator.evaluate_best_match("Cooking pasta", references, threshold=0.9)
+        assert result.passed is False
