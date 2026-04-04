@@ -290,3 +290,72 @@ class TestPropertyCheckerEdgeCases:
         summary = report.summary()
         assert "0/1 passed" in summary
         assert "FAIL" in summary
+
+
+class TestPropertyCheckerImports:
+    def test_property_result_dataclass(self) -> None:
+        from src.evaluation.properties import PropertyResult
+
+        result = PropertyResult(name="test", passed=True, message="test message")
+        assert result.name == "test"
+
+    def test_property_report_dataclass(self) -> None:
+        from src.evaluation.properties import PropertyReport
+
+        report = PropertyReport(results=[])
+        assert report.all_passed is True
+
+
+class TestPropertyCheckerComprehensive:
+    def test_check_max_length_zero(self) -> None:
+        result = PropertyChecker.check_max_length("", max_chars=10)
+        assert result.passed is True
+
+    def test_check_max_sentences_only_periods(self) -> None:
+        result = PropertyChecker.check_max_sentences("...", max_sentences=1)
+        assert result.passed is True
+
+    def test_check_no_pii_all_email_variations(self) -> None:
+        emails = ["user@domain.com", "test.user@sub.domain.co.uk"]
+        for email in emails:
+            result = PropertyChecker.check_no_pii(f"Contact: {email}")
+            assert result.passed is False
+
+    def test_check_no_pii_all_phone_variations(self) -> None:
+        phones = ["555-123-4567", "555.123.4567", "5551234567"]
+        for phone in phones:
+            result = PropertyChecker.check_no_pii(f"Call: {phone}")
+            assert result.passed is False
+
+    def test_check_valid_json_nested(self) -> None:
+        result = PropertyChecker.check_valid_json('{"a": {"b": [1, 2]}}')
+        assert result.passed is True
+
+    def test_check_json_schema_array_empty(self) -> None:
+        result = PropertyChecker.check_json_schema("[]", required_keys=["key"])
+        assert result.passed is True
+
+    def test_check_json_schema_dict_empty(self) -> None:
+        result = PropertyChecker.check_json_schema("{}", required_keys=["key"])
+        assert result.passed is False
+
+    def test_check_not_empty_single_char(self) -> None:
+        result = PropertyChecker.check_not_empty("a")
+        assert result.passed is True
+
+    def test_check_no_refusal_all_patterns(self) -> None:
+        patterns = [
+            "I cannot help",
+            "I can't assist",
+            "I am unable to",
+            "As an AI",
+            "I apologize",
+        ]
+        for pattern in patterns:
+            result = PropertyChecker.check_no_refusal(pattern)
+            assert result.passed is False
+
+    def test_run_checks_empty(self) -> None:
+        checker = PropertyChecker()
+        report = checker.run_checks([])
+        assert report.all_passed is True

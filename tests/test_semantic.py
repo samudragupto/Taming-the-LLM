@@ -181,3 +181,96 @@ class TestSemanticEvaluatorEdgeCases:
         references = ["Quantum physics", "Stock market trends"]
         result = evaluator.evaluate_best_match("Cooking pasta", references, threshold=0.9)
         assert result.passed is False
+
+
+[
+    {
+        "resource": "/c:/Users/user/Desktop/taming-the-llm/src/evaluation/semantic.py",
+        "owner": "Pylance10",
+        "code": {
+            "value": "reportUndefinedVariable",
+            "target": {
+                "$mid": 1,
+                "path": "/microsoft/pylance-release/blob/main/docs/diagnostics/reportUndefinedVariable.md",
+                "scheme": "https",
+                "authority": "github.com",
+            },
+        },
+        "severity": 4,
+        "message": '"pytest" is not defined',
+        "source": "Pylance",
+        "startLineNumber": 95,
+        "startColumn": 2,
+        "endLineNumber": 95,
+        "endColumn": 8,
+        "modelVersionId": 15,
+        "origin": "extHost1",
+    },
+    {
+        "resource": "/c:/Users/user/Desktop/taming-the-llm/src/evaluation/semantic.py",
+        "owner": "Pylance10",
+        "code": {
+            "value": "reportUndefinedVariable",
+            "target": {
+                "$mid": 1,
+                "path": "/microsoft/pylance-release/blob/main/docs/diagnostics/reportUndefinedVariable.md",
+                "scheme": "https",
+                "authority": "github.com",
+            },
+        },
+        "severity": 4,
+        "message": '"pytest" is not defined',
+        "source": "Pylance",
+        "startLineNumber": 96,
+        "startColumn": 2,
+        "endLineNumber": 96,
+        "endColumn": 8,
+        "modelVersionId": 15,
+        "origin": "extHost1",
+    },
+]
+
+
+@pytest.mark.semantic
+@pytest.mark.slow
+class TestSemanticEvaluatorInternals:
+    def test_model_initialization(self) -> None:
+        evaluator = SemanticEvaluator(model_name="all-MiniLM-L6-v2")
+        assert evaluator._model is not None
+        assert evaluator._model_name == "all-MiniLM-L6-v2"
+
+    def test_embed_returns_normalized_vector(self, evaluator: SemanticEvaluator) -> None:
+        embedding = evaluator.embed("test")
+        assert embedding.min() >= -1.0
+        assert embedding.max() <= 1.0
+
+    def test_embed_batch_consistency(self, evaluator: SemanticEvaluator) -> None:
+        import numpy as np
+
+        texts = ["hello", "world"]
+        batch_embeddings = evaluator.embed_batch(texts)
+        individual_embedding_0 = evaluator.embed(texts[0])
+        individual_embedding_1 = evaluator.embed(texts[1])
+
+        assert np.allclose(batch_embeddings[0], individual_embedding_0, atol=1e-5)
+        assert np.allclose(batch_embeddings[1], individual_embedding_1, atol=1e-5)
+
+    def test_similarity_symmetry(self, evaluator: SemanticEvaluator) -> None:
+        score_ab = evaluator.similarity("hello world", "world hello")
+        score_ba = evaluator.similarity("world hello", "hello world")
+        assert abs(score_ab - score_ba) < 0.01
+
+    def test_evaluate_all_fields_populated(self, evaluator: SemanticEvaluator) -> None:
+        result = evaluator.evaluate("test", "test", threshold=0.5)
+        assert result.similarity is not None
+        assert result.passed is not None
+        assert result.threshold == 0.5
+        assert result.candidate == "test"
+        assert result.reference == "test"
+
+    def test_evaluate_best_match_single_reference(self, evaluator: SemanticEvaluator) -> None:
+        result = evaluator.evaluate_best_match(
+            "Python is great", ["Python is great"], threshold=0.8
+        )
+        assert result.passed is True
+        assert result.reference == "Python is great"
