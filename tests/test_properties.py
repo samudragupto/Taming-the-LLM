@@ -359,3 +359,45 @@ class TestPropertyCheckerComprehensive:
         checker = PropertyChecker()
         report = checker.run_checks([])
         assert report.all_passed is True
+
+
+class TestPropertyCheckerMissedLines:
+    def test_check_max_sentences_with_multiple_delimiters(self) -> None:
+        """Test sentence counting with mixed delimiters."""
+        result = PropertyChecker.check_max_sentences(
+            "First! Second? Third. Fourth!", max_sentences=3
+        )
+        assert result.passed is False
+
+    def test_check_no_pii_ssn_exact_pattern(self) -> None:
+        """Test SSN pattern detection."""
+        result = PropertyChecker.check_no_pii("My SSN is 123-45-6789 exactly")
+        assert result.passed is False
+        assert "SSN" in result.message or "ssn" in result.message.lower()
+
+    def test_check_json_schema_array_with_missing_key_in_middle(self) -> None:
+        """Test JSON schema validation with missing key in array element."""
+        import json
+
+        data = [
+            {"entity": "first", "type": "PERSON"},
+            {"entity": "second"},  # Missing 'type'
+            {"entity": "third", "type": "LOCATION"},
+        ]
+        result = PropertyChecker.check_json_schema(
+            json.dumps(data), required_keys=["entity", "type"]
+        )
+        assert result.passed is False
+        assert "missing keys" in result.message.lower() or "1" in result.message
+
+    def test_check_no_refusal_case_insensitive_variations(self) -> None:
+        """Test refusal detection with different cases."""
+        variations = [
+            "I CANNOT help with that",
+            "i can't assist",
+            "I Am Unable to do this",
+            "I'M UNABLE TO",
+        ]
+        for variation in variations:
+            result = PropertyChecker.check_no_refusal(variation)
+            assert result.passed is False, f"Failed on: {variation}"

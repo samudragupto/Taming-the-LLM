@@ -226,3 +226,49 @@ class TestSemanticEvaluatorInternals:
         )
         assert result.passed is True
         assert result.reference == "Python is great"
+
+
+@pytest.mark.semantic
+@pytest.mark.slow
+class TestSemanticMissedLines:
+    def test_evaluator_direct_instantiation(self) -> None:
+        """Test direct instantiation instead of get_instance."""
+        evaluator = SemanticEvaluator(model_name="all-MiniLM-L6-v2")
+        assert evaluator._model_name == "all-MiniLM-L6-v2"
+        assert evaluator._model is not None
+
+    def test_embed_returns_float32_array(self, evaluator: SemanticEvaluator) -> None:
+        """Test embed returns correct dtype."""
+        import numpy as np
+
+        embedding = evaluator.embed("test")
+        assert embedding.dtype == np.float32
+
+    def test_embed_batch_returns_float32_array(self, evaluator: SemanticEvaluator) -> None:
+        """Test embed_batch returns correct dtype."""
+        import numpy as np
+
+        embeddings = evaluator.embed_batch(["test1", "test2"])
+        assert embeddings.dtype == np.float32
+
+    def test_similarity_clipping_edge_cases(self, evaluator: SemanticEvaluator) -> None:
+        """Test similarity score is clipped to [0, 1]."""
+        score = evaluator.similarity("test", "test")
+        assert 0.0 <= score <= 1.0
+
+    def test_evaluate_similarity_rounding(self, evaluator: SemanticEvaluator) -> None:
+        """Test similarity score is rounded to 4 decimals."""
+        result = evaluator.evaluate("hello", "hi", threshold=0.5)
+        # Check that similarity has at most 4 decimal places
+        score_str = str(result.similarity)
+        if "." in score_str:
+            decimals = len(score_str.split(".")[1])
+            assert decimals <= 4
+
+    def test_evaluate_best_match_similarity_rounding(self, evaluator: SemanticEvaluator) -> None:
+        """Test best match similarity is rounded."""
+        result = evaluator.evaluate_best_match("hello", ["hi", "hey", "greetings"], threshold=0.5)
+        score_str = str(result.similarity)
+        if "." in score_str:
+            decimals = len(score_str.split(".")[1])
+            assert decimals <= 4

@@ -112,3 +112,55 @@ class TestAgentAnswerQuestion:
             question="What is the speed of light?",
         )
         assert "don't know" in result.lower()
+
+
+class TestAgentEdgeCases:
+    def test_extract_entities_with_invalid_type(
+        self,
+        mock_agent: Agent,
+        configure_mock_completion: Any,
+        mock_responses: dict[str, Any],
+    ) -> None:
+        """Test entity extraction with invalid type gets normalized to OTHER."""
+        import json
+        from unittest.mock import MagicMock
+
+        invalid_response = mock_responses["extract_entities"]["good_response"].copy()
+        entities_with_invalid = [
+            {"entity": "Test", "type": "INVALID_TYPE"},
+            {"entity": "Test2", "type": "PERSON"},
+        ]
+        invalid_response["choices"][0]["message"]["content"] = json.dumps(entities_with_invalid)
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = invalid_response
+        mock_response.raise_for_status = MagicMock()
+        mock_agent._client._http.post.return_value = mock_response
+
+        result = mock_agent.extract_entities("Some text")
+        assert any(e.type == "OTHER" for e in result)
+
+    def test_extract_entities_with_markdown_json(
+        self,
+        mock_agent: Agent,
+        configure_mock_completion: Any,
+        mock_responses: dict[str, Any],
+    ) -> None:
+        """Test entity extraction strips markdown code blocks."""
+        import json
+        from unittest.mock import MagicMock
+
+        base_response = mock_responses["extract_entities"]["good_response"].copy()
+        entities = [{"entity": "Test", "type": "PERSON"}]
+        base_response["choices"][0]["message"]["content"] = f"```json\n{json.dumps(entities)}\n```"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = base_response
+        mock_response.raise_for_status = MagicMock()
+        mock_agent._client._http.post.return_value = mock_response
+
+        result = mock_agent.extract_entities("Some text")
+        assert len(result) > 0
+        assert result[0].entity == "Test"
